@@ -1,26 +1,25 @@
-import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-const Auth = () => {
+import { palette, typography } from "../../src/theme/tokens";
+
+export default function AuthScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Authentication</Text>
     </View>
   );
-};
-
-export default Auth;
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
     alignItems: "center",
+    justifyContent: "center",
     backgroundColor: "transparent",
   },
   title: {
-    color: "white",
-    fontSize: 32,
-    fontWeight: "bold",
+    color: palette.textPrimary,
+    fontSize: typography.h1,
+    fontWeight: "700",
   },
 });
