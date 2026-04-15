@@ -64,7 +64,7 @@ export default function ProfileScreen() {
               <Feather name={item.icon} size={20} color={palette.textPrimary} />
               <Text style={styles.menuLabel}>{item.label}</Text>
             </View>
-            <Feather name="chevron-right" size={20} color="#999" />
+            <Feather name="chevron-right" size={20} color={palette.textSecondary} />
           </TouchableOpacity>
         ))}
       </View>
@@ -106,12 +106,14 @@ const styles = StyleSheet.create({
     fontSize: typography.h3,
     fontWeight: "700",
     color: palette.textPrimary,
+    fontFamily: typography.fontFamily,
     textAlign: "center",
     marginBottom: spacing.sm,
   },
   username: {
     fontSize: typography.caption,
-    color: "#999",
+    color: palette.textSecondary,
+    fontFamily: typography.fontFamily,
     textAlign: "center",
     marginBottom: spacing.xxl,
   },
@@ -136,21 +138,24 @@ const styles = StyleSheet.create({
     fontSize: typography.title,
     fontWeight: "700",
     color: palette.textPrimary,
+    fontFamily: typography.fontFamily,
     marginBottom: spacing.xs,
   },
   statLabel: {
     fontSize: typography.overline,
-    color: "#999",
+    color: palette.textSecondary,
+    fontFamily: typography.fontFamily,
   },
   statDivider: {
     width: 1,
     alignSelf: "stretch",
-    backgroundColor: "#DDD",
+    backgroundColor: palette.borderMuted,
   },
   sectionTitle: {
     fontSize: typography.body,
     fontWeight: "700",
     color: palette.textPrimary,
+    fontFamily: typography.fontFamily,
     marginBottom: spacing.lg,
   },
   menuList: {
@@ -174,6 +179,7 @@ const styles = StyleSheet.create({
     fontSize: typography.body,
     fontWeight: "600",
     color: palette.textPrimary,
+    fontFamily: typography.fontFamily,
   },
   bottomSpacer: {
     height: 100,

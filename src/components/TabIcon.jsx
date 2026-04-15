@@ -21,5 +21,7 @@ const styles = StyleSheet.create({
   },
   containerActive: {
     backgroundColor: palette.accentSoft,
+    borderWidth: 1,
+    borderColor: palette.primary,
   },
 });

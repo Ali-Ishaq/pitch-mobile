@@ -1,11 +1,9 @@
 import { StyleSheet, Text, View } from "react-native";
 
-import { palette, typography } from "../../src/theme/tokens";
-
 export default function HomeScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Home Page</Text>
+      <Text style={styles.text}>Home Screen</Text>
     </View>
   );
 }
@@ -15,12 +13,11 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "transparent",
+    backgroundColor: "#FFFFFF",
   },
-  title: {
-    color: palette.textPrimary,
-    fontSize: typography.h1,
-    fontWeight: "700",
-    fontFamily: typography.fontFamily,
+  text: {
+    fontSize: 20,
+    fontWeight: "600",
+    color: "#111111",
   },
 });

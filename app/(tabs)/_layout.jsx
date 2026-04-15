@@ -1,4 +1,4 @@
-import { Entypo, Feather, FontAwesome5 } from "@expo/vector-icons";
+import { Entypo, Feather, FontAwesome5, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { Tabs } from "expo-router";
 import { StyleSheet, View } from "react-native";
@@ -24,8 +24,8 @@ export default function TabsLayout() {
           headerTitleStyle: styles.headerTitle,
           headerTintColor: palette.textPrimary,
           tabBarShowLabel: false,
-          tabBarActiveTintColor: palette.accent,
-          tabBarInactiveTintColor: "#D4A574",
+          tabBarActiveTintColor: palette.primary,
+          tabBarInactiveTintColor: palette.navInactive,
           tabBarStyle: styles.tabBar,
           tabBarItemStyle: styles.tabBarItem,
         }}
@@ -42,29 +42,8 @@ export default function TabsLayout() {
           }}
         />
 
-        <Tabs.Screen
-          name="auth"
-          options={{
-            title: "Authentication",
-            tabBarIcon: ({ color, focused }) => (
-              <TabIcon focused={focused}>
-                <FontAwesome5 name="user-shield" size={24} color={color} />
-              </TabIcon>
-            ),
-          }}
-        />
 
-        <Tabs.Screen
-          name="stopwatch"
-          options={{
-            title: "Stopwatch",
-            tabBarIcon: ({ color, focused }) => (
-              <TabIcon focused={focused}>
-                <Feather name="clock" size={24} color={color} />
-              </TabIcon>
-            ),
-          }}
-        />
+     
 
         <Tabs.Screen
           name="profile"
@@ -74,7 +53,7 @@ export default function TabsLayout() {
               <Feather
                 name="bell"
                 size={24}
-                color={palette.textPrimary}
+                color={palette.primary}
                 style={styles.headerRightIcon}
               />
             ),
@@ -107,6 +86,7 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     letterSpacing: 0.5,
     color: palette.textPrimary,
+    fontFamily: typography.fontFamily,
   },
   headerRightIcon: {
     marginRight: spacing.lg,
@@ -116,7 +96,7 @@ const styles = StyleSheet.create({
     height: 70,
     marginHorizontal: spacing.md,
     marginVertical: spacing.sm,
-    borderRadius: radius.pill,
+    borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: palette.borderSoft,
     backgroundColor: palette.surfaceGlass,
