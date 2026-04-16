@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   status: false,
   userData: null,
+  role: null,
 };
 
 export const authSlice = createSlice({
@@ -12,11 +13,13 @@ export const authSlice = createSlice({
     login: (state, action) => {
       state.status = true;
       state.userData = action.payload;
+      state.role = action.payload.role || "user"; // Default to "user" if role is not provided
     },
 
     logout: (state) => {
       state.status = false;
       state.userData = null;
+      state.role = null;
     },
   },
 });
