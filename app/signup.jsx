@@ -12,6 +12,7 @@ import { router } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
 import { LinearGradient } from "expo-linear-gradient";
 
+import { signupUser } from "../src/api";
 import { palette, radius, spacing, typography } from "../src/theme/tokens";
 
 export default function SignupScreen() {
@@ -40,10 +41,16 @@ export default function SignupScreen() {
     setIsLoading(true);
     setMessage("");
 
-    await new Promise((resolve) => setTimeout(resolve, 700));
+    const identifier = values.email.split("@")[0].toLowerCase();
+    const response = await signupUser({ ...values, identifier });
 
-    setMessage(`Account created for ${values.fullName}. Please sign in.`);
-    reset();
+    if (response.success) {
+      setMessage(response.message);
+      reset();
+    } else {
+      setMessage(response.message);
+    }
+
     setIsLoading(false);
   };
 

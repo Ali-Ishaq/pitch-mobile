@@ -17,6 +17,7 @@ import { Controller, useForm } from "react-hook-form";
 import { login } from "../src/store/authSlice";
 import { loginUser } from "../src/api";
 import { palette, radius, spacing, typography } from "../src/theme/tokens";
+import { getDefaultRouteForRole } from "../src/routing/roleRouting";
 
 export default function LoginScreen() {
   const dispatch = useDispatch();
@@ -46,7 +47,7 @@ export default function LoginScreen() {
     console.log("respponse of login: ", response)
     if (response.success) {
       dispatch(login(response.data));
-      router.replace("/(tabs)");
+      router.replace(getDefaultRouteForRole(response.data?.role));
       return;
     }
 
@@ -172,7 +173,7 @@ export default function LoginScreen() {
           </View>
         </View>
 
-        <Text style={styles.helperText}>Use admin / admin for the temporary login.</Text>
+        <Text style={styles.helperText}>Try admin/admin, owner/owner, or user/user.</Text>
       </View>
     </LinearGradient>
   );

@@ -1,35 +1,31 @@
-// src/api.js
-
-// 1. The In-Memory Database
-// We seed it with the admin user so your existing fallback works right away.
 let mockUsers = [
   {
-    id: "admin-user",
-    fullName: "Admin User",
-    identifier: "admin", 
-    email: "admin@pitch.com", 
-    city: "Karachi",
-    password: "admin", 
+    id: "user-1",
+    fullName: "Customer User",
+    identifier: "user",
+    email: "user@pitch.com",
+    city: "Lahore",
+    password: "user",
     role: "user",
   },
   {
-    id: "user-123",
-    fullName: "Mushtaq Ahmad",
-    identifier: "mushtaq.ahmad",
-    email: "mushtaq@pitch.com",
-    city: "Lahore",
-    password: "password123",
+    id: "owner-1",
+    fullName: "Owner User",
+    identifier: "owner",
+    email: "owner@pitch.com",
+    city: "Karachi",
+    password: "owner",
     role: "owner",
   },
-    {
-    id: "user-456",
-    fullName: "Ali Ishaq",
-    identifier: "ali.ishaq",
-    email: "ali@pitch.com",
-    city: "Lahore",
-    password: "password12",
+  {
+    id: "admin-1",
+    fullName: "Admin User",
+    identifier: "admin",
+    email: "admin@pitch.com",
+    city: "Islamabad",
+    password: "admin",
     role: "admin",
-  }
+  },
 ];
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -51,7 +47,7 @@ export async function loginUser({ identifier, password }) {
   if (!user) {
     return {
       success: false,
-      message: "Account not found. Use admin / admin for now.",
+      message: "Account not found. Try admin/admin, owner/owner, or user/user.",
       data: null,
     };
   }
@@ -65,7 +61,6 @@ export async function loginUser({ identifier, password }) {
   }
 
   // Destructure the password out so we don't leak it to the frontend payload
-  console.log("user found: ", user)
   const { password: _, ...safeUserData } = user;
 
   return {
@@ -100,7 +95,7 @@ export async function signupUser(userData) {
     id: `user-${Date.now()}`,
     ...userData,
     email: normalizedEmail,
-    
+    role: "user",
   };
 
   // Save to our temporary session database

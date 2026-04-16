@@ -1,4 +1,6 @@
 import { Feather } from "@expo/vector-icons";
+import { router } from "expo-router";
+import { useSelector } from "react-redux";
 import {
     Image,
     ScrollView,
@@ -9,6 +11,7 @@ import {
 } from "react-native";
 
 import { palette, radius, spacing, typography } from "../../src/theme/tokens";
+import { selectAuthRole } from "../../src/store/authSlice";
 
 const PROFILE_STATS = [
   { label: "Attendance", value: "75%" },
@@ -23,6 +26,15 @@ const MENU_ITEMS = [
 ];
 
 export default function ProfileScreen() {
+  const role = useSelector(selectAuthRole);
+
+  const roleAction =
+    role === "admin"
+      ? { label: "Open Admin Panel", route: "/admin/admin-panel" }
+      : role === "owner"
+        ? { label: "Open Owner Dashboard", route: "/owner/venue-management" }
+        : { label: "Open Customer Home", route: "/customer/home" };
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.avatarContainer}>
@@ -68,6 +80,14 @@ export default function ProfileScreen() {
           </TouchableOpacity>
         ))}
       </View>
+
+      <TouchableOpacity
+        style={styles.roleActionButton}
+        activeOpacity={0.85}
+        onPress={() => router.push(roleAction.route)}
+      >
+        <Text style={styles.roleActionText}>{roleAction.label}</Text>
+      </TouchableOpacity>
 
       <View style={styles.bottomSpacer} />
     </ScrollView>
@@ -182,6 +202,22 @@ const styles = StyleSheet.create({
     fontFamily: typography.fontFamily,
   },
   bottomSpacer: {
-    height: 100,
+    height: 40,
+  },
+  roleActionButton: {
+    marginTop: spacing.xl,
+    borderRadius: radius.md,
+    backgroundColor: palette.accentSoft,
+    borderWidth: 1,
+    borderColor: palette.accent,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    alignItems: "center",
+  },
+  roleActionText: {
+    fontSize: typography.body,
+    fontWeight: "700",
+    color: palette.primary,
+    fontFamily: typography.fontFamily,
   },
 });
