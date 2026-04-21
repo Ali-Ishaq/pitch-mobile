@@ -1,7 +1,7 @@
 const ROLE_DEFAULT_ROUTES = {
-  user: "/customer/home",
-  owner: "/owner/venue-management",
-  admin: "/admin/admin-panel",
+  user: "/customer",
+  owner: "/owner",
+  admin: "/admin",
 };
 
 const PUBLIC_ROUTES = ["/", "/index", "/login", "/signup", "/splashScreen", "/welcome"];
@@ -37,10 +37,6 @@ export function canAccessPath(role, pathname) {
   const safeRole = normalizeRole(role);
 
   if (isPublicRoute(safePath)) {
-    return true;
-  }
-
-  if (safePath.startsWith("/(tabs)")) {
     return true;
   }
 

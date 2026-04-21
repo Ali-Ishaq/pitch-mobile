@@ -1,4 +1,4 @@
-import { Entypo, Feather } from "@expo/vector-icons";
+import { Entypo, Feather, MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { Tabs, router } from "expo-router";
 import { useState } from "react";
@@ -9,7 +9,7 @@ import TabIcon from "../../src/components/TabIcon";
 import { logout } from "../../src/store/authSlice";
 import { palette, radius, shadows, spacing, typography } from "../../src/theme/tokens";
 
-export default function TabsLayout() {
+export default function OwnerTabsLayout() {
   const dispatch = useDispatch();
   const [menuVisible, setMenuVisible] = useState(false);
 
@@ -30,6 +30,7 @@ export default function TabsLayout() {
       />
 
       <Tabs
+        initialRouteName="venue-management"
         screenOptions={{
           sceneStyle: styles.scene,
           headerStyle: styles.header,
@@ -42,13 +43,25 @@ export default function TabsLayout() {
           tabBarItemStyle: styles.tabBarItem,
         }}
       >
+        <Tabs.Screen name="index" options={{ href: null }} />
         <Tabs.Screen
-          name="index"
+          name="venue-management"
           options={{
-            title: "Home",
+            title: "Venues",
             tabBarIcon: ({ color, focused }) => (
               <TabIcon focused={focused}>
-                <Entypo name="home" size={24} color={color} />
+                <Entypo name="shop" size={22} color={color} />
+              </TabIcon>
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="booking-overview"
+          options={{
+            title: "Analytics",
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon focused={focused}>
+                <MaterialIcons name="analytics" size={22} color={color} />
               </TabIcon>
             ),
           }}
@@ -73,6 +86,7 @@ export default function TabsLayout() {
             ),
           }}
         />
+        <Tabs.Screen name="slot-management" options={{ href: null }} />
       </Tabs>
 
       <Modal visible={menuVisible} transparent animationType="fade">

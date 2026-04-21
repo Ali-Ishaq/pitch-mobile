@@ -9,7 +9,7 @@ import TabIcon from "../../src/components/TabIcon";
 import { logout } from "../../src/store/authSlice";
 import { palette, radius, shadows, spacing, typography } from "../../src/theme/tokens";
 
-export default function TabsLayout() {
+export default function CustomerTabsLayout() {
   const dispatch = useDispatch();
   const [menuVisible, setMenuVisible] = useState(false);
 
@@ -30,6 +30,7 @@ export default function TabsLayout() {
       />
 
       <Tabs
+        initialRouteName="home"
         screenOptions={{
           sceneStyle: styles.scene,
           headerStyle: styles.header,
@@ -42,13 +43,25 @@ export default function TabsLayout() {
           tabBarItemStyle: styles.tabBarItem,
         }}
       >
+        <Tabs.Screen name="index" options={{ href: null }} />
         <Tabs.Screen
-          name="index"
+          name="home"
           options={{
             title: "Home",
             tabBarIcon: ({ color, focused }) => (
               <TabIcon focused={focused}>
                 <Entypo name="home" size={24} color={color} />
+              </TabIcon>
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="my-bookings"
+          options={{
+            title: "Bookings",
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon focused={focused}>
+                <Feather name="calendar" size={22} color={color} />
               </TabIcon>
             ),
           }}
@@ -73,6 +86,10 @@ export default function TabsLayout() {
             ),
           }}
         />
+        <Tabs.Screen name="booking-detail" options={{ href: null }} />
+        <Tabs.Screen name="booking-review-confirmation" options={{ href: null }} />
+        <Tabs.Screen name="slot-selection" options={{ href: null }} />
+        <Tabs.Screen name="venue-detail" options={{ href: null }} />
       </Tabs>
 
       <Modal visible={menuVisible} transparent animationType="fade">

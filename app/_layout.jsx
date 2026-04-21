@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Stack, router, usePathname } from "expo-router";
-import { Provider } from "react-redux";
-import { useSelector } from "react-redux";
+import { Provider, useSelector } from "react-redux";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 import store from "../src/store/store";
 import { selectAuthRole, selectIsAuthenticated } from "../src/store/authSlice";
@@ -44,10 +44,9 @@ function RootNavigator() {
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="login" options={{ headerShown: false }} />
       <Stack.Screen name="signup" options={{ title: "Sign Up" }} />
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="customer" options={{ headerShown: false }} />
       <Stack.Screen name="owner" options={{ headerShown: false }} />
-      <Stack.Screen name="admin" options={{ headerShown: false }} />
+      {/* <Stack.Screen name="admin" options={{ headerShown: false }} /> */}
     </Stack>
   );
 }
@@ -55,7 +54,11 @@ function RootNavigator() {
 export default function RootLayout() {
   return (
     <Provider store={store}>
-      <RootNavigator />
+      <SafeAreaProvider>
+        <SafeAreaView style={{ flex: 1 }} edges={["top", "bottom"]}>
+          <RootNavigator />
+        </SafeAreaView>
+      </SafeAreaProvider>
     </Provider>
   );
 }
