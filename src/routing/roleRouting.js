@@ -4,7 +4,15 @@ const ROLE_DEFAULT_ROUTES = {
   admin: "/admin",
 };
 
-const PUBLIC_ROUTES = ["/", "/index", "/login", "/signup", "/splashScreen", "/welcome"];
+const PUBLIC_ROUTES = [
+  "/",
+  "/index",
+  "/login",
+  "/signup",
+  "/verify-email",
+  "/splashScreen",
+  "/welcome",
+];
 
 function normalizePath(pathname = "") {
   if (!pathname) {
@@ -15,12 +23,15 @@ function normalizePath(pathname = "") {
 }
 
 export function normalizeRole(role) {
-  const normalizedRole = String(role || "").trim().toLowerCase();
-  if (normalizedRole === "admin" || normalizedRole === "owner") {
-    return normalizedRole;
+  const normalizedRole = String(role || "")
+    .trim()
+    .toLowerCase();
+
+  if (normalizedRole === "business") {
+    return "owner";
   }
 
-  return "user";
+  return normalizedRole;
 }
 
 export function getDefaultRouteForRole(role) {

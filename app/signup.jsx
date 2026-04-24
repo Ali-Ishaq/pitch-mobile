@@ -1,4 +1,7 @@
+import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router";
 import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import {
   ActivityIndicator,
   Pressable,
@@ -8,28 +11,26 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { router } from "expo-router";
-import { Controller, useForm } from "react-hook-form";
-import { LinearGradient } from "expo-linear-gradient";
 
-import { signupUser } from "../src/api";
+import { registerUser } from "../src/api/auth";
 import { palette, radius, spacing, typography } from "../src/theme/tokens";
 
 export default function SignupScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [isErrorMessage, setIsErrorMessage] = useState(false);
+  const [accountType, setAccountType] = useState("user");
 
   const {
     control,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm({
     defaultValues: {
-      fullName: "",
+      name: "",
       email: "",
       password: "",
-      city: "",
+      business_name: "",
     },
   });
 
@@ -40,18 +41,49 @@ export default function SignupScreen() {
 
     setIsLoading(true);
     setMessage("");
+    setIsErrorMessage(false);
 
-    const identifier = values.email.split("@")[0].toLowerCase();
-    const response = await signupUser({ ...values, identifier });
+    const payload = {
+      name: String(values.name || "").trim(),
+      email: String(values.email || "")
+        .trim()
+        .toLowerCase(),
+      password: String(values.password || ""),
+      role: accountType,
+    };
 
-    if (response.success) {
-      setMessage(response.message);
-      reset();
-    } else {
-      setMessage(response.message);
+    if (accountType === "business") {
+      payload.business_name = String(values.business_name || "").trim();
     }
 
-    setIsLoading(false);
+    try {
+      const axiosResponse = await registerUser(payload);
+      const responseBody = axiosResponse?.data;
+
+      if (responseBody?.success) {
+        setIsLoading(false);
+        router.push({
+          pathname: "/verify-email",
+          params: {
+            email: payload.email,
+            role: accountType,
+          },
+        });
+        return;
+      }
+
+      setMessage(responseBody?.message || "Registration failed.");
+      setIsErrorMessage(true);
+      setIsLoading(false);
+    } catch (error) {
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Registration failed. Please try again.";
+      setMessage(errorMessage);
+      setIsErrorMessage(true);
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -81,24 +113,61 @@ export default function SignupScreen() {
         </Text>
         <Text style={styles.subtitle}>Create your account to get started</Text>
 
+        <View style={styles.roleToggleWrap}>
+          <Pressable
+            style={[
+              styles.roleToggleButton,
+              accountType === "user" && styles.roleToggleButtonActive,
+            ]}
+            onPress={() => setAccountType("user")}
+          >
+            <Text
+              style={[
+                styles.roleToggleText,
+                accountType === "user" && styles.roleToggleTextActive,
+              ]}
+            >
+              Register as User
+            </Text>
+          </Pressable>
+          <Pressable
+            style={[
+              styles.roleToggleButton,
+              accountType === "business" && styles.roleToggleButtonActive,
+            ]}
+            onPress={() => setAccountType("business")}
+          >
+            <Text
+              style={[
+                styles.roleToggleText,
+                accountType === "business" && styles.roleToggleTextActive,
+              ]}
+            >
+              Register as Business
+            </Text>
+          </Pressable>
+        </View>
+
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>FullName</Text>
+          <Text style={styles.label}>Name</Text>
           <Controller
             control={control}
-            name="fullName"
-            rules={{ required: "Full name is required" }}
+            name="name"
+            rules={{ required: "Name is required" }}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
-                placeholder="Enter your full name"
+                placeholder="Enter your name"
                 placeholderTextColor={palette.navInactive}
-                style={[styles.input, errors.fullName && styles.inputError]}
+                style={[styles.input, errors.name && styles.inputError]}
                 value={value}
                 onBlur={onBlur}
                 onChangeText={onChange}
               />
             )}
           />
-          {errors.fullName ? <Text style={styles.validationText}>{errors.fullName.message}</Text> : null}
+          {errors.name ? (
+            <Text style={styles.validationText}>{errors.name.message}</Text>
+          ) : null}
         </View>
 
         <View style={styles.inputGroup}>
@@ -127,7 +196,9 @@ export default function SignupScreen() {
               />
             )}
           />
-          {errors.email ? <Text style={styles.validationText}>{errors.email.message}</Text> : null}
+          {errors.email ? (
+            <Text style={styles.validationText}>{errors.email.message}</Text>
+          ) : null}
         </View>
 
         <View style={styles.inputGroup}>
@@ -154,30 +225,50 @@ export default function SignupScreen() {
               />
             )}
           />
-          {errors.password ? <Text style={styles.validationText}>{errors.password.message}</Text> : null}
+          {errors.password ? (
+            <Text style={styles.validationText}>{errors.password.message}</Text>
+          ) : null}
         </View>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>City</Text>
-          <Controller
-            control={control}
-            name="city"
-            rules={{ required: "City is required" }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                placeholder="Enter your city"
-                placeholderTextColor={palette.navInactive}
-                style={[styles.input, errors.city && styles.inputError]}
-                value={value}
-                onBlur={onBlur}
-                onChangeText={onChange}
-              />
-            )}
-          />
-          {errors.city ? <Text style={styles.validationText}>{errors.city.message}</Text> : null}
-        </View>
+        {accountType === "business" ? (
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Business Name</Text>
+            <Controller
+              control={control}
+              name="business_name"
+              rules={{ required: "Business name is required" }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  placeholder="Enter business name"
+                  placeholderTextColor={palette.navInactive}
+                  style={[
+                    styles.input,
+                    errors.business_name && styles.inputError,
+                  ]}
+                  value={value}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                />
+              )}
+            />
+            {errors.business_name ? (
+              <Text style={styles.validationText}>
+                {errors.business_name.message}
+              </Text>
+            ) : null}
+          </View>
+        ) : null}
 
-        {message ? <Text style={styles.successMessage}>{message}</Text> : null}
+        {message ? (
+          <Text
+            style={[
+              styles.message,
+              isErrorMessage ? styles.errorMessage : styles.successMessage,
+            ]}
+          >
+            {message}
+          </Text>
+        ) : null}
 
         <TouchableOpacity
           style={[styles.button, isLoading && styles.buttonDisabled]}
@@ -188,12 +279,17 @@ export default function SignupScreen() {
           {isLoading ? (
             <ActivityIndicator color={palette.primary} />
           ) : (
-            <Text style={styles.buttonText}>Sign Up</Text>
+            <Text style={styles.buttonText}>Register</Text>
           )}
         </TouchableOpacity>
 
-        <Pressable style={styles.signInButton} onPress={() => router.push("/login")}>
-          <Text style={styles.signInText}>Already have an account? Sign In</Text>
+        <Pressable
+          style={styles.signInButton}
+          onPress={() => router.push("/login")}
+        >
+          <Text style={styles.signInText}>
+            Already have an account? Sign In
+          </Text>
         </Pressable>
       </View>
     </LinearGradient>
@@ -248,6 +344,36 @@ const styles = StyleSheet.create({
     fontSize: typography.caption,
     fontFamily: typography.fontFamily,
     textAlign: "center",
+  },
+  roleToggleWrap: {
+    flexDirection: "row",
+    borderWidth: 1,
+    borderColor: "rgba(50, 194, 154, 0.36)",
+    borderRadius: radius.pill,
+    backgroundColor: "rgba(9, 22, 34, 0.82)",
+    marginBottom: spacing.lg,
+    padding: 4,
+  },
+  roleToggleButton: {
+    flex: 1,
+    borderRadius: radius.pill,
+    paddingVertical: spacing.sm,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  roleToggleButtonActive: {
+    backgroundColor: palette.accent,
+  },
+  roleToggleText: {
+    color: "rgba(255,255,255,0.8)",
+    fontSize: typography.overline,
+    fontWeight: "700",
+    fontFamily: typography.fontFamily,
+    textTransform: "uppercase",
+    letterSpacing: 0.4,
+  },
+  roleToggleTextActive: {
+    color: palette.primary,
   },
   inputGroup: {
     marginBottom: spacing.md,
@@ -309,11 +435,16 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     fontFamily: typography.fontFamily,
   },
-  successMessage: {
-    color: "#86F4CF",
+  message: {
     fontSize: typography.caption,
     fontFamily: typography.fontFamily,
     marginBottom: spacing.sm,
     textAlign: "center",
+  },
+  successMessage: {
+    color: "#86F4CF",
+  },
+  errorMessage: {
+    color: "#FF8A8A",
   },
 });
