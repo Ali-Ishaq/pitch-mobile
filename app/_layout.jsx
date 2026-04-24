@@ -47,8 +47,8 @@ function RootNavigator() {
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="login" options={{ headerShown: false }} />
-      <Stack.Screen name="signup" options={{ title: "Sign Up" }} />
-      <Stack.Screen name="verify-email" options={{ title: "Verify Email" }} />
+      <Stack.Screen name="signup" options={{ headerShown: false }} />
+      <Stack.Screen name="verify-email" options={{ headerShown: false }} />
       <Stack.Screen name="customer" options={{ headerShown: false }} />
       <Stack.Screen name="owner" options={{ headerShown: false }} />
       {/* <Stack.Screen name="admin" options={{ headerShown: false }} /> */}
@@ -60,9 +60,9 @@ export default function RootLayout() {
   return (
     <Provider store={store}>
       <SafeAreaProvider>
-        <SafeAreaView style={{ flex: 1 }} edges={["top", "bottom"]}>
+        {/* <SafeAreaView style={{ flex: 1 }} edges={["top", "bottom"]}> */}
           <RootNavigator />
-        </SafeAreaView>
+        {/* </SafeAreaView> */}
       </SafeAreaProvider>
     </Provider>
   );
