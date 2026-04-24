@@ -1,11 +1,15 @@
-import { useEffect } from "react";
 import { Stack, router, usePathname } from "expo-router";
-import { Provider, useSelector } from "react-redux";
+import { useEffect } from "react";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { Provider, useSelector } from "react-redux";
 
-import store from "../src/store/store";
+import {
+  canAccessPath,
+  getDefaultRouteForRole,
+  isPublicRoute,
+} from "../src/routing/roleRouting";
 import { selectAuthRole, selectIsAuthenticated } from "../src/store/authSlice";
-import { canAccessPath, getDefaultRouteForRole, isPublicRoute } from "../src/routing/roleRouting";
+import store from "../src/store/store";
 
 function RootNavigator() {
   const pathname = usePathname();
@@ -44,6 +48,7 @@ function RootNavigator() {
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="login" options={{ headerShown: false }} />
       <Stack.Screen name="signup" options={{ title: "Sign Up" }} />
+      <Stack.Screen name="verify-email" options={{ title: "Verify Email" }} />
       <Stack.Screen name="customer" options={{ headerShown: false }} />
       <Stack.Screen name="owner" options={{ headerShown: false }} />
       {/* <Stack.Screen name="admin" options={{ headerShown: false }} /> */}

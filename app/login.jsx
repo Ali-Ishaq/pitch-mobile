@@ -1,4 +1,8 @@
+import { FontAwesome } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router";
 import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import {
   ActivityIndicator,
   Pressable,
@@ -8,16 +12,12 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { router } from "expo-router";
 import { useDispatch } from "react-redux";
-import { LinearGradient } from "expo-linear-gradient";
-import { FontAwesome } from "@expo/vector-icons";
-import { Controller, useForm } from "react-hook-form";
 
-import { login } from "../src/store/authSlice";
-import { loginUser } from "../src/api";
-import { palette, radius, spacing, typography } from "../src/theme/tokens";
+import { loginUser } from "../src/api/auth";
 import { getDefaultRouteForRole } from "../src/routing/roleRouting";
+import { setAuthUser } from "../src/store/authSlice";
+import { palette, radius, spacing, typography } from "../src/theme/tokens";
 
 export default function LoginScreen() {
   const dispatch = useDispatch();
@@ -30,7 +30,7 @@ export default function LoginScreen() {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      identifier: "",
+      email: "",
       password: "",
     },
   });
@@ -43,16 +43,49 @@ export default function LoginScreen() {
     setIsLoading(true);
     setMessage("");
 
-    const response = await loginUser(values);
-    console.log("respponse of login: ", response)
-    if (response.success) {
-      dispatch(login(response.data));
-      router.replace(getDefaultRouteForRole(response.data?.role));
-      return;
-    }
+    try {
+      const axiosResponse = await loginUser(values);
+      const responseBody = axiosResponse?.data;
 
-    setMessage(response.message);
-    setIsLoading(false);
+      if (responseBody?.success) {
+        dispatch(setAuthUser(responseBody.data));
+        setIsLoading(false);
+        router.replace(getDefaultRouteForRole(responseBody.data?.user?.role));
+        return;
+      }
+
+      setMessage(responseBody?.message || "Login failed.");
+      setIsLoading(false);
+    } catch (error) {
+      const statusCode = error?.response?.status;
+      const apiMessage = error?.response?.data?.message;
+      const apiData = error?.response?.data?.data;
+      const shouldRedirectToVerify =
+        statusCode === 403 &&
+        /verify your email with otp/i.test(String(apiMessage || ""));
+
+      if (shouldRedirectToVerify) {
+        setIsLoading(false);
+        router.push({
+          pathname: "/verify-email",
+          params: {
+            email: String(apiData.email || "")
+              .trim()
+              .toLowerCase(),
+            role: apiData.role,
+            autoResend: "1",
+          },
+        });
+        return;
+      }
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Login failed. Please try again.";
+      setMessage(errorMessage);
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -65,7 +98,7 @@ export default function LoginScreen() {
       <LinearGradient
         colors={["rgba(50, 194, 154, 0.42)", "rgba(50, 194, 154, 0)"]}
         start={{ x: 0, y: 0 }}
-        end={{ x: 0.72, y: 0.30 }}
+        end={{ x: 0.72, y: 0.3 }}
         style={styles.topAccent}
       />
       {/* <LinearGradient
@@ -83,25 +116,27 @@ export default function LoginScreen() {
         <Text style={styles.subtitle}>Sign in to your account</Text>
 
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>Username / Email</Text>
+          <Text style={styles.label}>Email</Text>
           <Controller
             control={control}
-            name="identifier"
-            rules={{ required: "Username or email is required" }}
+            name="email"
+            rules={{ required: "Email is required" }}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
-                placeholder="Enter your username"
+                placeholder="Enter your email"
                 placeholderTextColor={palette.navInactive}
                 autoCapitalize="none"
                 autoCorrect={false}
-                style={[styles.input, errors.identifier && styles.inputError]}
+                style={[styles.input, errors.email && styles.inputError]}
                 value={value}
                 onBlur={onBlur}
                 onChangeText={onChange}
               />
             )}
           />
-          {errors.identifier ? <Text style={styles.validationText}>{errors.identifier.message}</Text> : null}
+          {errors.email ? (
+            <Text style={styles.validationText}>{errors.email.message}</Text>
+          ) : null}
         </View>
 
         <View style={styles.inputGroup}>
@@ -128,7 +163,9 @@ export default function LoginScreen() {
               />
             )}
           />
-          {errors.password ? <Text style={styles.validationText}>{errors.password.message}</Text> : null}
+          {errors.password ? (
+            <Text style={styles.validationText}>{errors.password.message}</Text>
+          ) : null}
         </View>
 
         {message ? <Text style={styles.message}>{message}</Text> : null}
@@ -173,7 +210,9 @@ export default function LoginScreen() {
           </View>
         </View>
 
-        <Text style={styles.helperText}>Try admin/admin, owner/owner, or user/user.</Text>
+        <Text style={styles.helperText}>
+          Try admin/admin, owner/owner, or user/user.
+        </Text>
       </View>
     </LinearGradient>
   );
